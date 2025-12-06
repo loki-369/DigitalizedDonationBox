@@ -1,0 +1,42 @@
+# Digitalized Donation Box - Task List
+
+- [x] **Project Initialization**
+    - [x] Create Android project structure (Gradle, Manifest, basic packages)
+    - [x] Configure dependencies (CameraX, ML Kit/OpenCV, Room, Retrofit/Firebase)
+- [x] **Core UI Implementation**
+    - [x] Design Main Donor Interface (Camera preview, UPI QR, status)
+    - [x] Design Admin Login Screen
+    - [x] Design Admin Dashboard (Stats, Logs)
+- [x] **Feature: Currency Detection (Vision)**
+    - [x] Implement CameraX Preview
+    - [x] Setup ImageAnalysis Analyzer
+    - [x] Integrate OpenCV for Android
+    - [x] Implement Feature Matching (ORB) for Denomination Recognition
+    - [x] Implement "Fake Detection" Heuristics (Feature count threshold, Color Histogram analysis)
+    - [x] **[Refactor]** Implement Contour Detection to isolate note
+    - [x] **[New]** Integrate ML Kit Text Recognition (OCR) for denomination reading
+    - [x] **[Refactor]** Implement Histogram/Dominant Color Analysis
+    - [x] **[New]** Implement Aspect Ratio Check (Geometry)
+    - [x] **[New]** Implement Color Variance Analysis (Texture/Pattern)
+    - [ ] **[Refactor]** Implement OCR Bypass for Safety Checks (Prioritize Numbers)
+    - [ ] **[Refactor]** Tune thresholds for specific Indian denominations
+- [x] **Feature: Digital Donations (UPI)**
+    - [x] Implement UPI QR Code Generator
+    - [x] Handle UPI Intent links (deep linking)
+- [x] **Feature: Security & Sensors**
+    - [x] Implement Motion Detection using Accelerometer
+    - [x] Setup Alert System (Local sound/Notification)
+- [x] **Data Management**
+    - [x] Setup Room Database for local transaction logging
+    - [x] Implement Repository pattern for data access
+    - [x] **[New]** Implement Auto-Recording (Debounced)
+    - [x] Create Export to CSV functionality
+- [x] **Dashboard Website**
+    - [x] Initialize Web Project (Vite + React)
+    - [x] Implement "Antigravity" Mouse Tracking
+    - [x] Design "Hoomans" style UI
+    - [x] Integrate GitHub Data Fetching
+- [x] **Verification & Polish**
+    - [x] Manual verification of UI flows
+    - [x] Verify sensor logic
+    - [x] Final code cleanup and documentation

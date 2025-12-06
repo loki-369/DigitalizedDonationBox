@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Digitalized Donation Box</string>
+    <string name="tab_donate">Donate</string>
+    <string name="tab_admin">Admin</string>
+    <string name="prompt_admin_password">Enter Admin Password</string>
+    <string name="action_login">Login</string>
+    <string name="camera_permission_required">Camera permission required</string>
+    <string name="detected_result">Detected: %1$s (Hold: %2$d/15)</string>
+    <string name="saved_result">Saved %1$s!</string>
+    <string name="server_error_check_ip">Server Error: Check IP</string>
+    <string name="connect_to_pc">Connect to PC</string>
+    <string name="enter_pc_ip">Enter your PC\'s IP Address to sync with Dashboard:</string>
+    <string name="connect">Connect</string>
+    <string name="cancel">Cancel</string>
+    <string name="connected_to">Connected to %1$s</string>
+    <string name="title_admin_dashboard">Admin Dashboard</string>
+    <string name="label_total_donations">Total Donations</string>
+    <string name="default_amount">₹ 0.00</string>
+    <string name="btn_export_csv">Export Logs to CSV</string>
+    <string name="title_recent_transactions">Recent Transactions</string>
+    <string name="title_admin_login">Admin Login</string>
+    <string name="instruction_place_currency">Place currency in the box</string>
+    <string name="label_scan_upi">Or Scan to Donate via UPI</string>
+</resources>
