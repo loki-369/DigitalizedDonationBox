@@ -31,6 +31,14 @@
     - [x] Implement Repository pattern for data access
     - [x] **[New]** Implement Auto-Recording (Debounced)
     - [x] Create Export to CSV functionality
+- [x] **Android App: Advanced Detection**
+  - [x] Update `CurrencyAnalyzer.kt` with weighted pixel voting & strict HSV.
+  - [x] Implement "Center ROI" logic (ignore background).
+  - [x] Add "Edge Density" check (reject plain paper).
+  - [x] Update `fragment_donation.xml` UI (Dark Camera Overlay, Footer).
+- [x] **Documentation**
+  - [x] Create comprehensive `README.md`.
+  - [x] Document run instructions for App & Web.artbeat)
 - [x] **Dashboard Website**
     - [x] Initialize Web Project (Vite + React)
     - [x] Implement "Antigravity" Mouse Tracking

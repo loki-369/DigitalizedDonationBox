@@ -1,35 +1,36 @@
-# Dashboard Website Walkthrough
+# Dashboard Website & Android App Walkthrough
 
-I've created your "Hoomans" style dashboard with the "Antigravity" mouse trail!
+I've updated both the **Android App** (for accuracy) and the **Dashboard** (for style)!
 
-## Features
+## 📱 Android App Features
+- **Accurate Detection**: Tuned for Indian Currency (₹10 - ₹2000). Distinguishes ₹500 from ₹20 using color saturation and texture density.
+- **Smart Feedback**: Tells you if the room is "Too Dark" or if you need to "Place Note Closer".
+- **Dark UI**: A professional camera overlay with a "Scan to Donate" footer.
+
+## 💻 Dashboard Features
 - **Antigravity Cursor**: A physics-based trail follows your mouse.
-- **Hoomans UI**: Colorful, pop-style cards and layout.
+- **Product Theme**: Clean, "Ayax-inspired" design with a 3D digital box.
 - **Real-Time Sync**: Connects to your Android App via WiFi!
 
-## How to Run (Local Bridge)
+## 🚀 How to Run
 
 ### 1. Start the Server (PC)
-Open a terminal in VS Code and run:
-```bash
-cd dashboard_website
-node server.js
-```
-*Keep this terminal running! It acts as the bridge.*
-
-### 2. Start the Website (PC)
-Open a **second** terminal and run:
+Open a terminal in VS Code:
 ```bash
 cd dashboard_website
 npm run dev
 ```
-Click the link to open the dashboard.
 
-### 3. Connect the App (Phone)
-1.  Make sure your Phone and PC are on the **same WiFi**.
-2.  Open the App.
-3.  **Long Press** the "Admin" (Lock) button.
-4.  Enter your PC's IP Address (The server terminal will show you the correct IP, e.g., `192.168.1.5`).
-5.  Click "Connect".
+### 2. Run the App (Phone)
+1. Open Project in **Android Studio**.
+2. Connect your Phone.
+3. Click **Run** (Green Play Button).
+4. *Tip: If you see a yellow "SDK XML" warning, ignore it. As long as it says "BUILD SUCCESSFUL", you are good to go!*
 
-Now, scan a note. It will appear on your website instantly! 🚀
+### 3. Connect them
+1. Long Press the **Lock Icon** in the App.
+2. Enter your PC's IP Address (e.g., `192.168.1.X`).
+3. Scan a note!
+
+---
+*Changes have been committed to git. Run `git push` to upload.*
