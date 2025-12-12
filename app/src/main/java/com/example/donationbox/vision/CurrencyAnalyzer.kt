@@ -62,164 +62,118 @@ class CurrencyAnalyzer(private val listener: (String, Boolean) -> Unit) : ImageA
         val mat = Mat()
         Utils.bitmapToMat(bitmap, mat)
         
-        // 1. Preprocessing
+        // 1. Preprocessing (Gray)
         val grayMat = Mat()
         Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_RGB2GRAY)
         
-        // Safety Check 0: Too Dark? (Global check before expensive operations)
+        // Safety Check 0: Brightness (Avoid dark noise)
         val meanBrightness = org.opencv.core.Core.mean(grayMat).`val`[0]
-        if (meanBrightness < 40.0) {
-            listener("Too Dark", false)
+        if (meanBrightness < 35.0) { // Slightly lower threshold for dim rooms
+            listener("Too Dark (Need Light)", false)
             return
         }
 
-        Imgproc.GaussianBlur(grayMat, grayMat, org.opencv.core.Size(5.0, 5.0), 0.0)
+        // 2. Texture Analysis (Edge Density)
+        // Calculating on the CENTER only saves CPU and avoids background noise
+        val centerRect = org.opencv.core.Rect(grayMat.cols() / 4, grayMat.rows() / 4, grayMat.cols() / 2, grayMat.rows() / 2)
+        val centerRx = grayMat.submat(centerRect)
         
-        // 2. Edge Detection
         val edges = Mat()
-        Imgproc.Canny(grayMat, edges, 50.0, 150.0)
+        Imgproc.Canny(centerRx, edges, 50.0, 150.0)
         
-        // 3. Find Contours
-        val contours = ArrayList<org.opencv.core.MatOfPoint>()
-        val hierarchy = Mat()
-        Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE)
-        
-        // 4. Find Largest Object
-        var largestContour: org.opencv.core.MatOfPoint? = null
-        var maxArea = 0.0
-        val imageArea = mat.rows() * mat.cols()
-        
-        for (contour in contours) {
-            val area = Imgproc.contourArea(contour)
-            if (area > 20000 && area < imageArea * 0.95) { // Min area 20,000 to ignore small objects
-                if (area > maxArea) {
-                    maxArea = area
-                    largestContour = contour
-                }
-            }
-        }
-        
-        var roiMat = mat
-        
-        if (largestContour != null) {
-            val rect = Imgproc.boundingRect(largestContour)
-            if (rect.x >= 0 && rect.y >= 0 && rect.x + rect.width <= mat.cols() && rect.y + rect.height <= mat.rows()) {
-                roiMat = Mat(mat, rect)
-            }
-        }
-        // Fallback: If no contour, we still process 'roiMat' (which is the whole image)
-        
-        // 5. Color Analysis (Level 2)
-        val hsvMat = Mat()
-        val rgbMat = Mat()
-        Imgproc.cvtColor(roiMat, rgbMat, Imgproc.COLOR_RGBA2RGB)
-        Imgproc.cvtColor(rgbMat, hsvMat, Imgproc.COLOR_RGB2HSV)
-        
-        val centerRect = org.opencv.core.Rect(roiMat.cols() / 4, roiMat.rows() / 4, roiMat.cols() / 2, roiMat.rows() / 2)
-        val centerMat = hsvMat.submat(centerRect)
-        val meanColor = org.opencv.core.Core.mean(centerMat)
-        val hue = meanColor.`val`[0]
-        val saturation = meanColor.`val`[1]
-        val value = meanColor.`val`[2]
-        
-        // Edge Density Check (Texture Analysis)
-        val roiGray = Mat()
-        Imgproc.cvtColor(roiMat, roiGray, Imgproc.COLOR_RGB2GRAY)
-        val roiEdges = Mat()
-        Imgproc.Canny(roiGray, roiEdges, 50.0, 150.0)
-        val edgeCenter = roiEdges.submat(centerRect)
-        
-        val totalPixels = edgeCenter.rows() * edgeCenter.cols()
-        val edgePixels = org.opencv.core.Core.countNonZero(edgeCenter)
+        val totalPixels = centerRx.rows() * centerRx.cols()
+        val edgePixels = org.opencv.core.Core.countNonZero(edges)
         val edgeDensity = edgePixels.toDouble() / totalPixels.toDouble()
         
-        // Color Variance Analysis (Pattern/Texture Check 2)
-        val mean = org.opencv.core.MatOfDouble()
-        val stdDev = org.opencv.core.MatOfDouble()
-        org.opencv.core.Core.meanStdDev(centerMat, mean, stdDev)
-        val stdSaturation = stdDev.get(1, 0)[0] // Variance in Saturation
-        
-        // Aspect Ratio (Geometry Check) - Optional signal
-        var aspectRatio = 0.0
-        if (largestContour != null) {
-             val r = Imgproc.boundingRect(largestContour)
-             aspectRatio = r.width.toDouble() / r.height.toDouble()
-        }
-
-        // Safety Check: No Texture? (Wall, Floor, Skin)
-        // Currency has high detail. Smooth surfaces do not.
-        // BYPASS if OCR found a number (Trust the text)
-        if (ocrResult == null && edgeDensity < 0.01) {
-            listener("Place Note", false)
-            return
-        }
-        
-        // Safety Check: Too Flat/Solid Color? (Screen, Paper)
-        // Real notes have color variation (> 5.0). Solid screens are < 2.0.
-        // BYPASS if OCR found a number
-        if (ocrResult == null && stdSaturation < 3.0) {
-             listener("Place Note", false)
-             return
-        }
-        
-        // Safety Check: Too White/Grey? (Keyboard, Paper)
-        // Exclude ₹500 range (Hue 30-60, Sat 10-60) from this check
-        val is500Range = hue in 30.0..60.0 && saturation in 10.0..60.0
-        if (ocrResult == null && !is500Range && saturation < 20.0 && value > 100.0) { 
-             listener("Place Note", false)
+        // Real currency is INTROCATELY detailed (Latent images, micro-text).
+        // Smooth paper/walls usually have density < 0.05.
+        // Money usually has > 0.15.
+        if (ocrResult == null && edgeDensity < 0.05) {
+             listener("Place Note Closer", false)
              return
         }
 
-        // Refined Color Thresholds
+        // 3. Color Analysis (Center ROI)
+        val hsvMat = Mat()
+        val rgbMat = Mat()
+        // Crop to center first, then convert (Faster)
+        val matCenter = Mat(mat, centerRect)
+        Imgproc.cvtColor(matCenter, rgbMat, Imgproc.COLOR_RGBA2RGB)
+        Imgproc.cvtColor(rgbMat, hsvMat, Imgproc.COLOR_RGB2HSV)
+
+        val meanColor = org.opencv.core.Core.mean(hsvMat)
+        val hue = meanColor.`val`[0]       // 0-180 in OpenCV
+        val saturation = meanColor.`val`[1] // 0-255
+        val value = meanColor.`val`[2]     // 0-255
+        
+        // Tuned Indian Currency Ranges (OpenCV H:0-180, S:0-255)
+        // ₹500 (New): Stone Grey/Greenish. Low Sat. H:30-60, S:20-80
+        // ₹200: Orange. H:10-25, S:100+
+        // ₹100: Lavender. H:120-150, S:30-100
+        // ₹50: Cyan/Blue. H:90-110, S:80+
+        // ₹20: Green/Yellow. H:30-50, S:80+ (Distinguish from 500 by Saturation)
+        // ₹10: Brown. H:5-15, S:50+
+        
         val colorPrediction = when {
-            // ₹2000: Magenta/Pink
-            hue in 140.0..170.0 && saturation > 40 -> "₹2000"
-            // ₹500: Stone Grey/Greenish-Grey
-            hue in 30.0..60.0 && saturation in 10.0..60.0 && value > 60 -> "₹500"
-            // ₹200: Bright Yellow/Orange
-            hue in 15.0..25.0 && saturation > 100 -> "₹200"
-            // ₹100: Lavender/Blue-Purple
-            hue in 120.0..145.0 && saturation > 30 -> "₹100"
-            // ₹50: Fluorescent Blue/Cyan
-            hue in 85.0..115.0 && saturation > 80 -> "₹50"
-            // ₹20: Greenish-Yellow (Tightened Saturation)
-            hue in 35.0..75.0 && saturation > 60 -> "₹20"
-            // ₹10: Brown/Chocolate
-            // Relaxed saturation for old notes
-            hue in 8.0..35.0 && saturation > 25 -> "₹10"
+            // High Confidence Colors
+            hue in 10.0..25.0 && saturation > 100 -> "₹200"  // Orange
+            hue in 90.0..115.0 && saturation > 70 -> "₹50"   // Cyan
+            hue in 120.0..160.0 && saturation > 30 -> "₹100" // Lavender
+            
+            // Contextual/Tricky Colors
+            // ₹500 vs ₹20 (Both Green-ish)
+            hue in 30.0..70.0 -> {
+                if (saturation < 80) "₹500" // Grey-Green (Low Sat)
+                else "₹20" // Vibrant Green-Yellow (High Sat)
+            }
+            
+            // ₹10 (Brown) vs Skin tone
+            hue in 5.0..15.0 && saturation > 40 && value < 200 -> "₹10"
+            
             else -> "Unknown"
         }
-        
-        // 6. Multi-Level Decision
-        // Priority: OCR > Color
+
+        // 4. Decision Logic
+        // OCR is King. Color is Advisor.
         var finalResult = "Unknown"
         
         if (ocrResult != null) {
             finalResult = ocrResult
-        } else if (colorPrediction != "Unknown") {
+        } else if (colorPrediction != "Unknown" && edgeDensity > 0.10) {
+            // Only trust color if we also have high detail (Prevents solid colored paper)
             finalResult = colorPrediction
         }
 
-        // 7. Smoothing (Anti-Flicker)
+        // 5. Smoothing
         resultBuffer.add(finalResult)
         if (resultBuffer.size > bufferSize) {
             resultBuffer.removeFirst()
         }
 
-        // Voting: Need majority (3/5) to confirm
+        // Require 3/5 stable frames
         val frequency = resultBuffer.groupingBy { it }.eachCount()
         val bestMatch = frequency.maxByOrNull { it.value }?.key ?: "Unknown"
         val count = frequency[bestMatch] ?: 0
 
         val isStable = count >= 3 && bestMatch != "Unknown"
         
-        // Debug Info string
-        val debugInfo = if (isStable) {
+        // Return detailed feedback for 'Scanning...' phase
+        val outputText = if (isStable) {
             bestMatch
         } else {
-            "Scanning... (H:${hue.toInt()} S:${saturation.toInt()} E:${(edgeDensity*100).toInt()}%)"
+             // Show "Scanning..." but hint if we see color
+             if (colorPrediction != "Unknown") "Verifying $colorPrediction..." else "Scanning..."
         }
         
-        listener(debugInfo, isStable)
+        listener(outputText, isStable)
+        
+        // Clean up
+        mat.release()
+        grayMat.release()
+        centerRx.release()
+        edges.release()
+        matCenter.release()
+        rgbMat.release()
+        hsvMat.release()
     }
 }

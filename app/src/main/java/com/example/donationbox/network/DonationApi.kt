@@ -14,4 +14,7 @@ data class DonationRequest(
 interface DonationApi {
     @POST("/api/donations")
     fun sendDonation(@Body donation: DonationRequest): Call<Void>
+
+    @POST("/api/heartbeat")
+    fun sendHeartbeat(): Call<Void>
 }

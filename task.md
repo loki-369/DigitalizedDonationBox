@@ -36,6 +36,26 @@
     - [x] Implement "Antigravity" Mouse Tracking
     - [x] Design "Hoomans" style UI
     - [x] Integrate GitHub Data Fetching
+    - [x] **[New]** Implement Real-time App Connection Status (Heartbeat)
+- [x] **Website Redesign (Professional UI)**
+    - [x] Install react-router-dom
+    - [x] Create Landing Page (Holo AI style)
+    - [x] Create Admin Login Page
+    - [x] Refactor Dashboard Page
+    - [x] Setup Routing in App.jsx
+- [x] **Website Redesign (Professional UI)**
+    - [x] Install react-router-dom
+    - [x] Create Landing Page (Holo AI style)
+    - [x] Create Admin Login Page
+    - [x] Refactor Dashboard Page
+    - [x] Setup Routing in App.jsx
+- [x] **Theme Pivot 1: Warm Charity** (Deprecated/Done)
+- [ ] **Theme Pivot 2: Digital Box Product Showcase**
+    - [ ] **Landing Page**: Implement 3D CCS "Digital Box" Hero.
+    - [ ] **Landing Page**: Add "Scroll Story" sections for Smart Detection, Theft Guard, Logs.
+    - [ ] **Dashboard**: Add "Export Logs" functionality (Mock).
+    - [ ] **Dashboard**: Add "Theft Detection" Status Indicator.
+    - [ ] **Styling**: Polish animations for a "Premium" feel (Ayax inspired).
 - [x] **Verification & Polish**
     - [x] Manual verification of UI flows
     - [x] Verify sensor logic

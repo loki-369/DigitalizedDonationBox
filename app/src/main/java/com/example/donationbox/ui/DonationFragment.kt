@@ -133,6 +133,32 @@ class DonationFragment : Fragment() {
         })
     }
 
+    private var heartbeatJob: kotlinx.coroutines.Job? = null
+
+    private fun startHeartbeat() {
+        heartbeatJob?.cancel()
+        heartbeatJob = viewLifecycleOwner.lifecycleScope.launch {
+            while (true) {
+                if (serverIp != "192.168.1.X") {
+                    try {
+                        val retrofit = retrofit2.Retrofit.Builder()
+                            .baseUrl("http://$serverIp:3000/")
+                            .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create())
+                            .build()
+                        val api = retrofit.create(com.example.donationbox.network.DonationApi::class.java)
+                        api.sendHeartbeat().enqueue(object : retrofit2.Callback<Void> {
+                            override fun onResponse(call: retrofit2.Call<Void>, response: retrofit2.Response<Void>) {}
+                            override fun onFailure(call: retrofit2.Call<Void>, t: Throwable) {}
+                        })
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+                kotlinx.coroutines.delay(5000) // Pulse every 5 seconds
+            }
+        }
+    }
+
     private fun showIpDialog() {
         val input = android.widget.EditText(context)
         input.hint = "192.168.1.X"
@@ -144,6 +170,7 @@ class DonationFragment : Fragment() {
             .setView(input)
             .setPositiveButton(getString(com.example.donationbox.R.string.connect)) { _, _ ->
                 serverIp = input.text.toString()
+                startHeartbeat() // Start pulse
                 android.widget.Toast.makeText(context, getString(com.example.donationbox.R.string.connected_to, serverIp), android.widget.Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton(getString(com.example.donationbox.R.string.cancel), null)
@@ -227,6 +254,7 @@ class DonationFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        heartbeatJob?.cancel()
         cameraExecutor.shutdown()
         _binding = null
     }

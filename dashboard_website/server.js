@@ -58,6 +58,21 @@ app.post('/api/donations', (req, res) => {
     res.json({ success: true, id: newDonation.id });
 });
 
+// Heartbeat System
+let lastHeartbeat = 0;
+
+app.post('/api/heartbeat', (req, res) => {
+    lastHeartbeat = Date.now();
+    res.json({ success: true });
+});
+
+app.get('/api/status', (req, res) => {
+    const now = Date.now();
+    // Consider "connected" if heartbeat received in last 10 seconds
+    const isConnected = (now - lastHeartbeat) < 10000;
+    res.json({ connected: isConnected });
+});
+
 app.listen(PORT, '0.0.0.0', () => {
     const nets = os.networkInterfaces();
     let localIp = 'localhost';
