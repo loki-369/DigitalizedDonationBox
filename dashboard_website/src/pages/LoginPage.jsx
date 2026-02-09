@@ -1,20 +1,46 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { Heart } from 'lucide-react'
 
 const LoginPage = () => {
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
     const navigate = useNavigate()
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault()
+        setError('')
+
+        const username = e.target.username.value
+        const password = e.target.password.value
+
         setLoading(true)
-        // Mock login delay
-        setTimeout(() => {
+
+        try {
+            const response = await fetch('http://localhost:3000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+
+            const data = await response.json()
+
+            if (data.success) {
+                // Store admin info
+                localStorage.setItem('admin', JSON.stringify(data.admin))
+                setTimeout(() => {
+                    setLoading(false)
+                    navigate('/dashboard')
+                }, 500)
+            } else {
+                setLoading(false)
+                setError('Invalid username or password')
+            }
+        } catch (error) {
             setLoading(false)
-            navigate('/dashboard')
-        }, 1500)
+            setError('Connection error. Please ensure the server is running.')
+        }
     }
 
     return (
@@ -35,17 +61,34 @@ const LoginPage = () => {
                 </p>
 
                 <form onSubmit={handleLogin}>
+                    {error && (
+                        <div style={{
+                            padding: '10px',
+                            marginBottom: '1rem',
+                            background: '#fee',
+                            color: '#c33',
+                            borderRadius: '8px',
+                            fontSize: '0.9rem'
+                        }}>
+                            {error}
+                        </div>
+                    )}
+
                     <input
                         type="text"
-                        placeholder="Username"
+                        name="username"
+                        placeholder="Username (e.g., amil@ceo)"
                         className="login-input"
-                        defaultValue="admin"
+                        defaultValue=""
+                        required
                     />
                     <input
                         type="password"
+                        name="password"
                         placeholder="Password"
                         className="login-input"
-                        defaultValue="admin"
+                        defaultValue=""
+                        required
                     />
 
                     <button

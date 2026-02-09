@@ -1,11 +1,9 @@
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { Link } from 'react-router-dom'
-import { Heart, ArrowRight, ShieldCheck, Box, FileBarChart, ScanLine } from 'lucide-react'
+import { ArrowRight, ShieldCheck, Box, FileBarChart, ScanLine } from 'lucide-react'
 import '../App.css'
 
 const LandingPage = () => {
-    const { scrollYProgress } = useScroll();
-    const y = useTransform(scrollYProgress, [0, 1], [0, -50]);
 
     return (
         <div className="landing-page product-theme">
@@ -93,10 +91,10 @@ const LandingPage = () => {
                                     <span className="hold-timer">(Hold: 18/15)</span>
                                 </div>
                             </div>
-                            
+
                             <div className="camera-footer">
                                 <div className="qr-box">
-                                   <div className="pixel-qr"></div>
+                                    <div className="pixel-qr"></div>
                                 </div>
                                 <div className="footer-text">
                                     <span>Or Scan to Donate</span>
@@ -105,7 +103,7 @@ const LandingPage = () => {
                             </div>
 
                             {/* Toast Notification */}
-                            <motion.div 
+                            <motion.div
                                 className="success-toast"
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -10] }}

@@ -1,46 +1,154 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, Activity, Grid, Settings, LogOut, TrendingUp, Users, ShieldAlert, Download, Box } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion' // eslint-disable-line no-unused-vars
+import { Grid, Settings, LogOut, TrendingUp, Users, ShieldAlert, Download, Box, Wallet, History } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Dashboard = () => {
     const [donations, setDonations] = useState([])
     const [total, setTotal] = useState(0)
     const [systemStatus, setSystemStatus] = useState(false)
-    const [theftStatus, setTheftStatus] = useState('SECURE') // SECURE | ALERT
+    const [theftStatus] = useState('SECURE') // SECURE | ALERT
     const [activeTab, setActiveTab] = useState('overview')
+    const [loading, setLoading] = useState(true)
+    const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+    const [withdrawPassword, setWithdrawPassword] = useState('')
+    const [withdrawError, setWithdrawError] = useState('')
+    const [withdrawing, setWithdrawing] = useState(false)
+    const navigate = useNavigate()
 
-    // Mock Data fallback
-    const MOCK_DONATIONS = [
-        { id: 1, amount: 500, currency: 'INR', type: 'Cash', timestamp: Date.now() - 100000 },
-        { id: 2, amount: 10, currency: 'INR', type: 'Cash', timestamp: Date.now() - 500000 },
-        { id: 3, amount: 2000, currency: 'INR', type: 'Cash', timestamp: Date.now() - 800000 },
-        { id: 4, amount: 50, currency: 'INR', type: 'Cash', timestamp: Date.now() - 1200000 },
-    ]
+    const API_BASE = 'http://localhost:3000/api'
 
-    useEffect(() => {
-        const fetchDonations = () => {
-            // Real API calls would go here
-            // For now using mock data
-            setDonations(MOCK_DONATIONS)
-            setSystemStatus(true)
+    // Fetch donations from backend
+    const fetchDonations = async () => {
+        try {
+            const response = await fetch(`${API_BASE}/donations`)
+            const data = await response.json()
+
+            if (data.success) {
+                setDonations(data.donations)
+            }
+        } catch (error) {
+            console.error('Failed to fetch donations:', error)
         }
+    }
 
+    // Fetch device status
+    const fetchStatus = async () => {
+        try {
+            const response = await fetch(`${API_BASE}/status`)
+            const data = await response.json()
+
+            if (data.success) {
+                setSystemStatus(data.device.online)
+                setTotal(data.stats.totalAmount)
+            }
+        } catch (error) {
+            console.error('Failed to fetch status:', error)
+            setSystemStatus(false)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    // Initial load
+    useEffect(() => {
         fetchDonations()
-        // Simulate Theft Sensor
-        const timer = setTimeout(() => {
-            // Randomly trigger a safe "check" 
-        }, 5000)
-        return () => clearTimeout(timer)
+        fetchStatus()
     }, [])
 
+    // Poll for updates every 2 seconds
     useEffect(() => {
-        const sum = donations.reduce((acc, curr) => acc + curr.amount, 0)
-        setTotal(sum)
-    }, [donations])
+        const interval = setInterval(() => {
+            fetchDonations()
+            fetchStatus()
+        }, 2000)
+
+        return () => clearInterval(interval)
+    }, [])
+
+    const handleWithdraw = async () => {
+        setWithdrawError('')
+
+        if (!withdrawPassword) {
+            setWithdrawError('Please enter your password')
+            return
+        }
+
+        const admin = JSON.parse(localStorage.getItem('admin') || '{}')
+
+        if (!admin.username) {
+            setWithdrawError('Admin session expired. Please login again.')
+            return
+        }
+
+        setWithdrawing(true)
+
+        try {
+            const response = await fetch(`${API_BASE}/withdraw`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: admin.username,
+                    password: withdrawPassword
+                })
+            })
+
+            const data = await response.json()
+
+            if (data.success) {
+                alert(`✅ Withdrawal successful!\n\nAmount: ₹${data.withdrawal.amount.toLocaleString()}\nDonations: ${data.withdrawal.donationCount}\nCollected by: ${data.withdrawal.collectedBy}`)
+                setShowWithdrawModal(false)
+                setWithdrawPassword('')
+                // Refresh data
+                fetchDonations()
+                fetchStatus()
+            } else {
+                setWithdrawError(data.error || 'Withdrawal failed')
+            }
+        } catch (error) {
+            setWithdrawError('Connection error. Please try again.')
+        } finally {
+            setWithdrawing(false)
+        }
+    }
 
     const handleExport = () => {
-        alert("Downloading Audit_Log_2025.csv...")
+        // Generate CSV content
+        const headers = ['ID', 'Amount (₹)', 'Currency', 'Type', 'Timestamp', 'Date/Time']
+        const rows = donations.map(d => [
+            d.id,
+            d.amount,
+            d.currency,
+            d.type,
+            d.timestamp,
+            new Date(d.timestamp).toLocaleString('en-IN', {
+                dateStyle: 'short',
+                timeStyle: 'medium'
+            })
+        ])
+
+        // Create CSV string
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.join(','))
+        ].join('\n')
+
+        // Create blob and download
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const link = document.createElement('a')
+        const url = URL.createObjectURL(blob)
+
+        link.setAttribute('href', url)
+        link.setAttribute('download', `Audit_Log_${new Date().toISOString().split('T')[0]}.csv`)
+        link.style.visibility = 'hidden'
+
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        // Show success message
+        alert(`✅ Downloaded ${donations.length} transactions to CSV file!`)
     }
 
     return (
@@ -84,6 +192,12 @@ const Dashboard = () => {
                         <p style={{ color: 'var(--text-light)' }}>Unit ID: DBX-2025-ALPHA</p>
                     </div>
                     <div style={{ display: 'flex', gap: '15px' }}>
+                        <button onClick={() => navigate('/withdrawals')} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <History size={18} /> History
+                        </button>
+                        <button onClick={() => setShowWithdrawModal(true)} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }} disabled={total === 0}>
+                            <Wallet size={18} /> Withdraw
+                        </button>
                         <button onClick={handleExport} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <Download size={18} /> Export Logs
                         </button>
@@ -171,6 +285,91 @@ const Dashboard = () => {
                     )}
                 </AnimatePresence>
             </main>
+
+            {/* Withdrawal Modal */}
+            {showWithdrawModal && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0,0,0,0.7)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000
+                }}>
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        style={{
+                            background: 'white',
+                            padding: '2rem',
+                            borderRadius: '20px',
+                            maxWidth: '450px',
+                            width: '90%',
+                            boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+                        }}
+                    >
+                        <h2 style={{ marginBottom: '1rem', color: '#667eea' }}>💸 Withdraw Donations</h2>
+                        <p style={{ color: '#666', marginBottom: '1.5rem' }}>
+                            You are about to withdraw <strong>₹{total.toLocaleString()}</strong> from {donations.length} donations.
+                        </p>
+
+                        {withdrawError && (
+                            <div style={{
+                                padding: '10px',
+                                marginBottom: '1rem',
+                                background: '#fee',
+                                color: '#c33',
+                                borderRadius: '8px',
+                                fontSize: '0.9rem'
+                            }}>
+                                {withdrawError}
+                            </div>
+                        )}
+
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                                Confirm Password
+                            </label>
+                            <input
+                                type="password"
+                                value={withdrawPassword}
+                                onChange={(e) => setWithdrawPassword(e.target.value)}
+                                placeholder="Enter your password"
+                                className="login-input"
+                                style={{ width: '100%' }}
+                                onKeyPress={(e) => e.key === 'Enter' && handleWithdraw()}
+                            />
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button
+                                onClick={() => {
+                                    setShowWithdrawModal(false)
+                                    setWithdrawPassword('')
+                                    setWithdrawError('')
+                                }}
+                                className="btn-secondary"
+                                style={{ flex: 1 }}
+                                disabled={withdrawing}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleWithdraw}
+                                className="btn-primary"
+                                style={{ flex: 1, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+                                disabled={withdrawing}
+                            >
+                                {withdrawing ? 'Processing...' : 'Confirm Withdrawal'}
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </div>
     )
 }

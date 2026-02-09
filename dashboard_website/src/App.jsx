@@ -4,19 +4,22 @@ import { Sun, Moon } from 'lucide-react'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import Dashboard from './pages/Dashboard'
+import WithdrawalsPage from './pages/WithdrawalsPage'
 import './App.css'
 
 const ThemeToggle = () => {
-  const [isDark, setIsDark] = useState(false)
+  const [isDark, setIsDark] = useState(() => {
+    const savedTheme = localStorage.getItem('theme')
+    return savedTheme === 'dark'
+  })
 
   useEffect(() => {
-    // Check local storage or preference
-    const savedTheme = localStorage.getItem('theme')
-    if (savedTheme === 'dark') {
-      setIsDark(true)
+    if (isDark) {
       document.body.classList.add('dark-mode')
+    } else {
+      document.body.classList.remove('dark-mode')
     }
-  }, [])
+  }, [isDark])
 
   const toggleTheme = () => {
     if (isDark) {
@@ -94,6 +97,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/withdrawals" element={<WithdrawalsPage />} />
         </Routes>
       </div>
     </Router>

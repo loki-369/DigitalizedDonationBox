@@ -125,10 +125,8 @@ class DonationFragment : Fragment() {
                 android.util.Log.d("DonationFragment", "Sent to server: ${response.code()}")
             }
             override fun onFailure(call: retrofit2.Call<Void>, t: Throwable) {
-                android.util.Log.e("DonationFragment", "Failed to send to server", t)
-                activity?.runOnUiThread {
-                    android.widget.Toast.makeText(context, getString(com.example.donationbox.R.string.server_error_check_ip), android.widget.Toast.LENGTH_SHORT).show()
-                }
+                android.util.Log.e("DonationFragment", "Failed to send to server (Is Laptop Connected?)", t)
+                // Silenced Toast to avoid spamming the user
             }
         })
     }
@@ -183,13 +181,20 @@ class DonationFragment : Fragment() {
         cameraProviderFuture.addListener({
             val cameraProvider: androidx.camera.lifecycle.ProcessCameraProvider = cameraProviderFuture.get()
 
+            // High-Resolution Strategy for OCR clarity
+            val resolutionSelector = androidx.camera.core.resolutionselector.ResolutionSelector.Builder()
+                .setResolutionStrategy(androidx.camera.core.resolutionselector.ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                .build()
+
             val preview = androidx.camera.core.Preview.Builder()
+                .setResolutionSelector(resolutionSelector)
                 .build()
                 .also {
                     it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
                 }
 
             val imageAnalyzer = androidx.camera.core.ImageAnalysis.Builder()
+                .setResolutionSelector(resolutionSelector)
                 .setBackpressureStrategy(androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
                 .also {
@@ -215,7 +220,7 @@ class DonationFragment : Fragment() {
                                     isRecorded = true
                                     android.widget.Toast.makeText(context, getString(com.example.donationbox.R.string.saved_result, result), android.widget.Toast.LENGTH_SHORT).show()
                                     // Visual Feedback
-                                    binding.detectionOverlay.setBackgroundColor(android.graphics.Color.GREEN)
+                                    binding.detectionOverlay.setBackgroundResource(com.example.donationbox.R.drawable.rounded_border_success)
                                     binding.detectionOverlay.postDelayed({
                                         binding.detectionOverlay.setBackgroundResource(com.example.donationbox.R.drawable.rounded_border)
                                     }, 500)
@@ -225,8 +230,8 @@ class DonationFragment : Fragment() {
                                 if (result == "Place Note" || result == "Too Dark") {
                                     binding.detectionOverlay.setBackgroundResource(com.example.donationbox.R.drawable.rounded_border)
                                 } else {
-                                    // Unknown object -> Red
-                                    binding.detectionOverlay.setBackgroundColor(android.graphics.Color.RED)
+                                    // Unknown object -> Red Border (Transparent center)
+                                    binding.detectionOverlay.setBackgroundResource(com.example.donationbox.R.drawable.rounded_border_error)
                                 }
                                 
                                 stableFrameCount = 0
@@ -242,9 +247,19 @@ class DonationFragment : Fragment() {
 
             try {
                 cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
+                val camera = cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageAnalyzer
                 )
+                
+                // Ensure Continuous Auto-Focus is active
+                val cameraControl = camera.cameraControl
+                val factory = binding.viewFinder.meteringPointFactory
+                val point = factory.createPoint(binding.viewFinder.width / 2f, binding.viewFinder.height / 2f)
+                val action = androidx.camera.core.FocusMeteringAction.Builder(point, androidx.camera.core.FocusMeteringAction.FLAG_AF)
+                    .setAutoCancelDuration(5, java.util.concurrent.TimeUnit.SECONDS)
+                    .build()
+                cameraControl.startFocusAndMetering(action)
+                
             } catch (exc: Exception) {
                 android.util.Log.e("DonationFragment", "Use case binding failed", exc)
             }

@@ -36,6 +36,10 @@
   - [x] Implement "Center ROI" logic (ignore background).
   - [x] Add "Edge Density" check (reject plain paper).
   - [x] Update `fragment_donation.xml` UI (Dark Camera Overlay, Footer).
+- [x] **Bug Fixes & Polish**
+  - [x] Fix Solid Red Box glitch (Transparent Borders).
+  - [x] Fix ₹20/₹200 Confusion (Stricter Color Logic).
+  - [x] Resolve Gradle/Java Build Errors.
 - [x] **Documentation**
   - [x] Create comprehensive `README.md`.
   - [x] Document run instructions for App & Web.artbeat)

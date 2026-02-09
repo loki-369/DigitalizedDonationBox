@@ -1,15 +1,20 @@
 package com.example.donationbox.service
 
 import android.app.Service
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import com.example.donationbox.R
 import kotlin.math.sqrt
 
 class SecurityService : Service(), SensorEventListener {
@@ -35,8 +40,36 @@ class SecurityService : Service(), SensorEventListener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d("SecurityService", "Service Started")
+        createNotificationChannel()
+        
+        // Using standard 'ic_launcher' which is guaranteed by manifest
+        val finalNotification = NotificationCompat.Builder(this, CHANNEL_ID)
+             .setContentTitle(getString(R.string.security_service_title))
+             .setContentText(getString(R.string.security_service_content))
+             .setSmallIcon(R.drawable.ic_launcher)
+             .setPriority(NotificationCompat.PRIORITY_LOW)
+             .build()
+
+        startForeground(1, finalNotification)
+
+        Log.d("SecurityService", "Service Started in Foreground")
         return START_STICKY
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val serviceChannel = NotificationChannel(
+                CHANNEL_ID,
+                getString(R.string.security_service_channel_name),
+                NotificationManager.IMPORTANCE_LOW
+            )
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(serviceChannel)
+        }
+    }
+
+    companion object {
+        const val CHANNEL_ID = "SecurityServiceChannel"
     }
 
     override fun onBind(intent: Intent?): IBinder? {

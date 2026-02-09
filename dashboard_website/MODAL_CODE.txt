@@ -1,0 +1,86 @@
+// Add this at the end of Dashboard.jsx, before the closing </div> and after </main>
+
+{/* Withdrawal Modal */}
+{showWithdrawModal && (
+    <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0,0,0,0.7)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000
+    }}>
+        <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            style={{
+                background: 'white',
+                padding: '2rem',
+                borderRadius: '20px',
+                maxWidth: '450px',
+                width: '90%',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+            }}
+        >
+            <h2 style={{ marginBottom: '1rem', color: '#667eea' }}>💸 Withdraw Donations</h2>
+            <p style={{ color: '#666', marginBottom: '1.5rem' }}>
+                You are about to withdraw <strong>₹{total.toLocaleString()}</strong> from {donations.length} donations.
+            </p>
+            
+            {withdrawError && (
+                <div style={{
+                    padding: '10px',
+                    marginBottom: '1rem',
+                    background: '#fee',
+                    color: '#c33',
+                    borderRadius: '8px',
+                    fontSize: '0.9rem'
+                }}>
+                    {withdrawError}
+                </div>
+            )}
+            
+            <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                    Confirm Password
+                </label>
+                <input
+                    type="password"
+                    value={withdrawPassword}
+                    onChange={(e) => setWithdrawPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="login-input"
+                    style={{ width: '100%' }}
+                    onKeyPress={(e) => e.key === 'Enter' && handleWithdraw()}
+                />
+            </div>
+            
+            <div style={{ display: 'flex', gap: '10px' }}>
+                <button
+                    onClick={() => {
+                        setShowWithdrawModal(false)
+                        setWithdrawPassword('')
+                        setWithdrawError('')
+                    }}
+                    className="btn-secondary"
+                    style={{ flex: 1 }}
+                    disabled={withdrawing}
+                >
+                    Cancel
+                </button>
+                <button
+                    onClick={handleWithdraw}
+                    className="btn-primary"
+                    style={{ flex: 1, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+                    disabled={withdrawing}
+                >
+                    {withdrawing ? 'Processing...' : 'Confirm Withdrawal'}
+                </button>
+            </div>
+        </motion.div>
+    </div>
+)}

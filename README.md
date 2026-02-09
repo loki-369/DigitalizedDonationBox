@@ -12,7 +12,7 @@ The **Digital Donation Box** is a hybrid IoT system designed to modernize charit
 1.  **Smart Device (Android App)**: Runs on a tablet/phone inside the physical box.
     *   **Currency Detection**: Identifying notes (₹10 - ₹2000) using OpenCV & Computer Vision.
     *   **Real-time Feedback**: Visual overlays and "Hold" timers for accuracy.
-    *   **Security**: Anti-theft motion alarms.
+    *   **Security**: Anti-theft motion alarms (Foreground Service with 24/7 monitoring).
 2.  **Admin Console (Web Dashboard)**: A React-based command center for organizers.
     *   **Live Analytics**: Track total donations in real-time.
     *   **Device Status**: Monitor box health and security alerts.
@@ -38,9 +38,9 @@ digitalized_donation_box/
 ## 🛠️ Getting Started
 
 ### Prerequisites
-*   **Android Studio** (Koala or newer recommended)
+*   **Android Studio** (Ladybug/Koala or newer)
 *   **Node.js** (v18+) & **npm**
-*   **JDK 17** (for Android Gradle)
+*   **JDK 21** (Required for Gradle 8.9+)
 
 ---
 
@@ -101,7 +101,7 @@ To have the Android App send live data to your Laptop/Dashboard:
 
 | Issue | Solution |
 | :--- | :--- |
-| **Gradle Sync Failed** | Check your JDK version (Settings > Build Tools > Gradle). Ensure it is set to JDK 17 or 11. |
+| **Gradle Sync Failed** | Check your JDK version. Ensure it is set to JDK 21 (matching Gradle 8.9). |
 | **"Too Dark" Warning** | The CV model needs good lighting. Use the device torch or ensure the room is well-lit. |
 | **App Crashes on Start** | Ensure you have granted Camera permissions in Android Settings. |
 | **npm install error** | Delete `node_modules` folder and try running `npm install` again. |
