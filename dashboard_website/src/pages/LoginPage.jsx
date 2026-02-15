@@ -7,6 +7,7 @@ const LoginPage = () => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const navigate = useNavigate()
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
     const handleLogin = async (e) => {
         e.preventDefault()
@@ -18,7 +19,7 @@ const LoginPage = () => {
         setLoading(true)
 
         try {
-            const response = await fetch('http://localhost:3000/api/login', {
+            const response = await fetch(`${API_BASE}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })

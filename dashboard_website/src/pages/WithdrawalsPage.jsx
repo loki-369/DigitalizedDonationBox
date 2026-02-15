@@ -8,7 +8,7 @@ const WithdrawalsPage = () => {
     const [loading, setLoading] = useState(true)
     const [totalWithdrawn, setTotalWithdrawn] = useState(0)
 
-    const API_BASE = 'http://localhost:3000/api'
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
     const fetchWithdrawals = async () => {
         try {
