@@ -156,7 +156,7 @@ const Dashboard = () => {
             <aside className="sidebar">
                 <div className="logo-brand">
                     <Box stroke="var(--primary)" strokeWidth={2} />
-                    <span>DigiBox Admin</span>
+                    <span>TRUEFUND Admin</span>
                 </div>
 
                 <nav>
@@ -189,7 +189,7 @@ const Dashboard = () => {
                 <header className="header">
                     <div>
                         <h1>Console</h1>
-                        <p style={{ color: 'var(--text-light)' }}>Unit ID: DBX-2025-ALPHA</p>
+                        <p style={{ color: 'var(--text-light)' }}>Unit ID: TRF-2026-CORE</p>
                     </div>
                     <div style={{ display: 'flex', gap: '15px' }}>
                         <button onClick={() => navigate('/withdrawals')} className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

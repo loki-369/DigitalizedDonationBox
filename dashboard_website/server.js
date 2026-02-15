@@ -314,7 +314,7 @@ app.get('/health', (req, res) => {
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
     console.log('\n🚀 ========================================');
-    console.log('   Digital Donation Box - Backend Server');
+    console.log('   TRUEFUND - Backend Server');
     console.log('========================================');
     console.log(`✅ Server running on port ${PORT}`);
     console.log(`📡 API endpoint: http://localhost:${PORT}`);

@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "DigitalizedDonationBox"
+rootProject.name = "TRUEFUND"
 include(":app")

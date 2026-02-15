@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Digitalized Donation Box</string>
+    <string name="app_name">TRUEFUND</string>
     <string name="tab_donate">Donate</string>
     <string name="tab_admin">Admin</string>
     <string name="prompt_admin_password">Enter Admin Password</string>
@@ -22,7 +22,7 @@
     <string name="instruction_place_currency">Place currency in the box</string>
     <string name="label_scan_upi">Or Scan to Donate via UPI</string>
     <string name="security_service_channel_name">Security Service Channel</string>
-    <string name="security_service_title">Digital Box Security</string>
+    <string name="security_service_title">TRUEFUND Security</string>
     <string name="security_service_content">Theft Guard Active</string>
     <string name="security_alert_log">TAMPER DETECTED! Box is moving!</string>
 </resources>

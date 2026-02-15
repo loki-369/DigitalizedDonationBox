@@ -10,7 +10,7 @@ const LandingPage = () => {
             <nav className="glass-nav">
                 <div className="logo-brand">
                     <Box stroke="var(--primary)" strokeWidth={2} />
-                    <span style={{ color: '#0F172A' }}>DigiBox</span>
+                    <span style={{ color: '#0F172A' }}>TRUEFUND</span>
                 </div>
                 <div>
                     <Link to="/login" className="btn-secondary">Admin Login</Link>
@@ -30,7 +30,7 @@ const LandingPage = () => {
                         <div className="badge">Next Gen Hardware</div>
                         <h1>The Future of <span className="text-gradient-blue">Smart Giving</span></h1>
                         <p>
-                            Experience the world's first AI-powered digital donation box.
+                            Experience TRUEFUND, the world's first AI-powered digital donation system.
                             Real-time recognition, military-grade security, and instant cloud analytics.
                         </p>
                         <div className="cta-group">
@@ -51,7 +51,7 @@ const LandingPage = () => {
                             <div className="cube-face front">
                                 <div className="slot"></div>
                                 <div className="sensor-eye"></div>
-                                <div className="brand-mark">DigiBox</div>
+                                <div className="brand-mark">TRUEFUND</div>
                             </div>
                             <div className="cube-face back"></div>
                             <div className="cube-face right"></div>

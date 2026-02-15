@@ -1,0 +1,43 @@
+# 🚀 TRUEFUND IS READY!
+
+## ✅ Renamed & Moved Successfully
+
+The entire project has been rebranded to **TRUEFUND** and moved to your Desktop.
+
+**New Location:** `C:\Users\ishal\Desktop\TRUEFUND`
+
+---
+
+## ⚡ How to Run (One-Time Setup)
+
+Since I cannot run commands on your Desktop directly, please follow these simple steps:
+
+1.  **Stop Current Servers:**
+    Press **Ctrl+C** in your current terminal to stop the old version.
+
+2.  **Open New Terminal:**
+    Press **Win+R**, type `powershell`, and hit Enter.
+
+3.  **Run These Commands:**
+    (Copy and paste this block)
+
+    ```powershell
+    code "C:\Users\ishal\Desktop\TRUEFUND"
+    cd "C:\Users\ishal\Desktop\TRUEFUND\dashboard_website"
+    npm install
+    npm run start
+    ```
+
+**That's it!** Your new TRUEFUND dashboard will open automatically.
+
+---
+
+## 📱 Android App
+To build the new TRUEFUND Android app:
+1.  Open **Android Studio**.
+2.  Select **File > Open**.
+3.  Navigate to: `C:\Users\ishal\Desktop\TRUEFUND`
+4.  Opening it will sync the project with the new "TRUEFUND" name.
+5.  Build & Run on your device!
+
+Enjoy your new brand! 🚀

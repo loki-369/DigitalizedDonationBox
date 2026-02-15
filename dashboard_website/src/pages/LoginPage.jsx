@@ -57,7 +57,7 @@ const LoginPage = () => {
 
                 <h2>Welcome Back</h2>
                 <p style={{ color: 'var(--text-light)', marginBottom: '2rem' }}>
-                    Please sign in to manage the Digital Box.
+                    Please sign in to manage the TRUEFUND Dashboard.
                 </p>
 
                 <form onSubmit={handleLogin}>
