@@ -225,7 +225,7 @@ const Dashboard = () => {
                                 <div className="info-card">
                                     <div className="card-title">Sensor Health</div>
                                     <div className="card-value" style={{ fontSize: '1.5rem', marginTop: '10px' }}>
-                                        {systemStatus ? "Optimal 🟢" : "Check Wiring ⚠️"}
+                                        {systemStatus ? "Optimal 🟢" : "Device Offline 🔴"}
                                     </div>
                                     <div style={{ marginTop: 10, color: '#999', fontSize: '0.9rem' }}>CV Module: Active</div>
                                 </div>
@@ -278,8 +278,8 @@ const Dashboard = () => {
                             </div>
                             <h3>Hardware Configuration</h3>
                             <p>Calibrate sensors, set theft sensitivity, and manage network.</p>
-                            <div className="status-capsule" style={{ display: 'inline-flex', marginTop: '1rem' }}>
-                                IP: 192.168.1.105
+                            <div className="status-capsule" style={{ display: 'inline-flex', marginTop: '1rem', background: '#f1f2f6', color: '#57606f' }}>
+                                ℹ️ Run 'ipconfig' in CMD to find your PC's IP
                             </div>
                         </motion.div>
                     )}

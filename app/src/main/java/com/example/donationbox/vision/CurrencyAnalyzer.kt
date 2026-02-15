@@ -15,6 +15,15 @@ class CurrencyAnalyzer(private val listener: (String, Boolean) -> Unit) : ImageA
     private val resultBuffer = java.util.LinkedList<String>()
     private val bufferSize = 5
 
+    // Pre-compiled Regex Patterns for Performance
+    private val regex2000 = Regex("\\b2000\\b")
+    private val regex500 = Regex("\\b500\\b")
+    private val regex200 = Regex("\\b200\\b")
+    private val regex100 = Regex("\\b100\\b")
+    private val regex50 = Regex("\\b50\\b")
+    private val regex20 = Regex("\\b20\\b")
+    private val regex10 = Regex("\\b10\\b")
+
     @androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
     override fun analyze(image: ImageProxy) {
         val mediaImage = image.image
@@ -48,19 +57,19 @@ class CurrencyAnalyzer(private val listener: (String, Boolean) -> Unit) : ImageA
         // Prioritize explicit text matches (Digits + Words)
         return when {
             // ₹2000
-            Regex("\\b2000\\b").containsMatchIn(content) || content.contains("TWO THOUSAND") || content.contains("२०००") -> "₹2000"
+            regex2000.containsMatchIn(content) || content.contains("TWO THOUSAND") || content.contains("२०००") -> "₹2000"
             // ₹500
-            Regex("\\b500\\b").containsMatchIn(content) || content.contains("FIVE HUNDRED") || content.contains("५००") -> "₹500"
+            regex500.containsMatchIn(content) || content.contains("FIVE HUNDRED") || content.contains("५००") -> "₹500"
             // ₹200
-            Regex("\\b200\\b").containsMatchIn(content) || content.contains("TWO HUNDRED") || content.contains("२००") -> "₹200"
+            regex200.containsMatchIn(content) || content.contains("TWO HUNDRED") || content.contains("२००") -> "₹200"
             // ₹100
-            Regex("\\b100\\b").containsMatchIn(content) || content.contains("ONE HUNDRED") || content.contains("१००") -> "₹100"
+            regex100.containsMatchIn(content) || content.contains("ONE HUNDRED") || content.contains("१००") -> "₹100"
             // ₹50
-            Regex("\\b50\\b").containsMatchIn(content) || content.contains("FIFTY") || content.contains("५०") -> "₹50"
+            regex50.containsMatchIn(content) || content.contains("FIFTY") || content.contains("५०") -> "₹50"
             // ₹20
-            Regex("\\b20\\b").containsMatchIn(content) || content.contains("TWENTY") || content.contains("२०") -> "₹20"
+            regex20.containsMatchIn(content) || content.contains("TWENTY") || content.contains("२०") -> "₹20"
             // ₹10
-            Regex("\\b10\\b").containsMatchIn(content) || content.contains("TEN") || content.contains("१०") -> "₹10"
+            regex10.containsMatchIn(content) || content.contains("TEN") || content.contains("१०") -> "₹10"
             else -> null
         }
     }

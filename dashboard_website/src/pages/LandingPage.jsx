@@ -10,7 +10,7 @@ const LandingPage = () => {
             <nav className="glass-nav">
                 <div className="logo-brand">
                     <Box stroke="var(--primary)" strokeWidth={2} />
-                    <span style={{ color: '#0F172A' }}>TRUEFUND</span>
+                    <span>TRUEFUND</span>
                 </div>
                 <div>
                     <Link to="/login" className="btn-secondary">Admin Login</Link>

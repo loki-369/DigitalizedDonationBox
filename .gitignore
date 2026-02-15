@@ -1,5 +1,24 @@
-# Project exclude paths
-/.gradle/
-/app/build/
-/app/build/intermediates/javac/debug/classes/
-/build/
+
+# Common
+.gradle
+.idea
+build/
+*.log
+*.tmp
+.DS_Store
+
+# Android
+app/build/
+local.properties
+.cxx/
+captures/
+.externalNativeBuild/
+.navigation/
+
+# Website
+node_modules/
+dist/
+npm-debug.log
+yarn-error.log
+.env
+.vercel

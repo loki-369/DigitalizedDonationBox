@@ -112,10 +112,7 @@ class DonationFragment : Fragment() {
     }
 
     private fun sendToServer(amount: Double, timestamp: Long) {
-        val retrofit = retrofit2.Retrofit.Builder()
-            .baseUrl("http://$serverIp:3000/")
-            .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create())
-            .build()
+        val retrofit = com.example.donationbox.network.RetrofitClient.getClient("http://$serverIp:3000/")
 
         val api = retrofit.create(com.example.donationbox.network.DonationApi::class.java)
         val request = com.example.donationbox.network.DonationRequest(amount, "INR", "Cash", timestamp)
@@ -126,7 +123,7 @@ class DonationFragment : Fragment() {
             }
             override fun onFailure(call: retrofit2.Call<Void>, t: Throwable) {
                 android.util.Log.e("DonationFragment", "Failed to send to server (Is Laptop Connected?)", t)
-                // Silenced Toast to avoid spamming the user
+                android.widget.Toast.makeText(context, "Server Error: ${t.message}", android.widget.Toast.LENGTH_LONG).show()
             }
         })
     }
@@ -139,10 +136,7 @@ class DonationFragment : Fragment() {
             while (true) {
                 if (serverIp != "192.168.1.X") {
                     try {
-                        val retrofit = retrofit2.Retrofit.Builder()
-                            .baseUrl("http://$serverIp:3000/")
-                            .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create())
-                            .build()
+                        val retrofit = com.example.donationbox.network.RetrofitClient.getClient("http://$serverIp:3000/")
                         val api = retrofit.create(com.example.donationbox.network.DonationApi::class.java)
                         api.sendHeartbeat().enqueue(object : retrofit2.Callback<Void> {
                             override fun onResponse(call: retrofit2.Call<Void>, response: retrofit2.Response<Void>) {}
@@ -214,7 +208,7 @@ class DonationFragment : Fragment() {
 
                                 binding.tvInstruction.text = getString(com.example.donationbox.R.string.detected_result, result, stableFrameCount)
 
-                                if (stableFrameCount > 15 && !isRecorded) {
+                                if (stableFrameCount > 3 && !isRecorded) {
                                     // Auto-Save
                                     saveDonation(result)
                                     isRecorded = true

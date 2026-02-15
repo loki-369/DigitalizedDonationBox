@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "com.example.donationbox"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -66,7 +66,8 @@ dependencies {
     // We will assume a standard implementation or use a wrapper if available, but for this file we'll list the standard dependency logic 
     // or a placeholder if a direct maven artifact isn't standard. 
     // For simplicity in this text-based generation, we'll assume the user handles the SDK import or we use a community wrapper)
-    implementation("org.opencv:opencv:4.9.0")
+    // OpenCV (Community Wrapper for easy import)
+    implementation("com.quickbirdstudios:opencv:4.5.3.0")
     implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0") 

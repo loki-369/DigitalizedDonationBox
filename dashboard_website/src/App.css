@@ -166,23 +166,41 @@ h3 {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem 2rem;
+  padding-right: 6rem;
+  /* Space for theme toggle */
   position: relative;
   z-index: 100;
+}
+
+.glass-nav .logo-brand {
+  margin-bottom: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .btn-secondary {
   padding: 10px 25px;
   border-radius: 50px;
   border: 1px solid #E0E0E0;
-  color: #555;
+  color: var(--text-light);
+  /* Better variable usage */
+  background: transparent;
   text-decoration: none;
   font-weight: 600;
   transition: all 0.2s;
+  white-space: nowrap;
+  /* Prevent wrapping */
+}
+
+.dark-mode .btn-secondary {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #E2E8F0;
 }
 
 .btn-secondary:hover {
   border-color: var(--primary);
   color: var(--primary);
+  background: rgba(37, 99, 235, 0.1);
 }
 
 /* HERO */
@@ -234,6 +252,7 @@ h3 {
 .text-gradient-blue {
   background: linear-gradient(135deg, var(--primary), #60A5FA);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -509,15 +528,29 @@ h3 {
 }
 
 @keyframes scanMove {
-  0% { top: 10%; opacity: 0; }
-  5% { opacity: 1; }
-  95% { opacity: 1; }
-  100% { top: 70%; opacity: 0; }
+  0% {
+    top: 10%;
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 1;
+  }
+
+  95% {
+    opacity: 1;
+  }
+
+  100% {
+    top: 70%;
+    opacity: 0;
+  }
 }
 
 /* Camera Demo UI */
 .feature-demo.scan-demo {
-  background: #1E293B; /* Slate 800 - Camera Feed Dark */
+  background: #1E293B;
+  /* Slate 800 - Camera Feed Dark */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -533,7 +566,8 @@ h3 {
   border: 2px solid white;
   border-radius: 8px;
   margin: 20px auto 10px;
-  box-shadow: 0 0 0 100vh rgba(0,0,0,0.3); /* Dim surroundings */
+  box-shadow: 0 0 0 100vh rgba(0, 0, 0, 0.3);
+  /* Dim surroundings */
   position: relative;
   z-index: 2;
 }
@@ -549,7 +583,7 @@ h3 {
   font-family: sans-serif;
   font-size: 0.8rem;
   margin-top: 8px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .amount {
@@ -565,7 +599,7 @@ h3 {
 
 /* Footer Panel */
 .camera-footer {
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   padding: 10px;
   display: flex;
   align-items: center;
@@ -584,8 +618,8 @@ h3 {
 .pixel-qr {
   width: 100%;
   height: 100%;
-  background: 
-    linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), 
+  background:
+    linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000),
     linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000);
   background-size: 4px 4px;
   background-position: 0 0, 2px 2px;
@@ -612,7 +646,8 @@ h3 {
   position: absolute;
   top: 10%;
   right: 10px;
-  background: #7C3AED; /* Violet */
+  background: #7C3AED;
+  /* Violet */
   color: white;
   padding: 5px 10px;
   border-radius: 20px;
@@ -622,7 +657,7 @@ h3 {
   align-items: center;
   gap: 5px;
   z-index: 10;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .success-toast::before {
@@ -679,12 +714,12 @@ h3 {
 .dashboard-layout {
   display: flex;
   height: 100vh;
-  background: #F4F6F8;
+  background: var(--bg-color);
 }
 
 .sidebar {
   width: 280px;
-  background: white;
+  background: var(--card-bg);
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -700,6 +735,11 @@ h3 {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.logo-brand span {
+  color: var(--text-main);
+  /* Ensure text is visible in dark mode */
 }
 
 .nav-btn {
@@ -745,7 +785,7 @@ h3 {
 }
 
 .status-capsule {
-  background: white;
+  background: var(--card-bg);
   padding: 8px 20px;
   border-radius: 50px;
   display: flex;
@@ -764,7 +804,7 @@ h3 {
 }
 
 .info-card {
-  background: white;
+  background: var(--card-bg);
   padding: 2rem;
   border-radius: 25px;
   box-shadow: var(--shadow-sm);
@@ -791,7 +831,7 @@ h3 {
 }
 
 .tx-list {
-  background: white;
+  background: var(--card-bg);
   border-radius: 25px;
   padding: 2rem;
   box-shadow: var(--shadow-sm);
@@ -819,4 +859,27 @@ h3 {
   justify-content: center;
   color: var(--primary);
   font-size: 1.5rem;
+}
+
+.dark-mode .tx-icon-bg {
+  background: rgba(37, 99, 235, 0.2);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 5px;
+  border: 2px solid var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
 }
